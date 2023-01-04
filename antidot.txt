@@ -1,0 +1,67 @@
+// Creating skyrmions in an antidot lattice
+
+setgridsize(512,512,1)
+setcellsize(1e-9,1e-9,0.5e-9) 
+setpbc(0,0,6)
+
+setgeom( circle(50e-9).inverse().repeat(120e-9, 120e-9, 0) ) //antidot array
+//saveas(geom, "circle_inverse")
+
+Msat  = 711e3
+Aex   = 1e-11
+Ku1=3.45e5
+Dind=-0.78e-3
+AnisU = vector(0,0,1)
+//alpha = 0.1
+
+
+
+Bmax  := 40.0e-3
+Bstep :=  5.0e-3
+//MinimizerStop = 1e-6
+TableAdd(B_ext)
+TableAdd(ext_topologicalcharge)
+
+saveas(m, "groundstate")    // relaxed state
+snapshot(m)
+for B:=0.0; B<=Bmax; B+=Bstep{
+    B_ext = vector(B, 0, 0)
+    minimize()   // small changes best minimized by minimize()
+    tablesave()
+    saveas(m, "state")
+    snapshot(m)
+}
+saveas(m, "groundstate1")    // relaxed state
+snapshot(m)
+
+for B:=Bmax; B>=-Bmax; B-=Bstep{
+    B_ext = vector(B, 0, 0)
+    minimize()   // small changes best minimized by minimize()
+    tablesave()
+    saveas(m, "state2")
+    snapshot(m)
+    
+    
+}
+saveas(m, "groundstate2")    // relaxed state
+snapshot(m)
+
+for B:=-Bmax; B<=Bmax; B+=Bstep{
+    B_ext = vector(B, 0, 0)
+    minimize()   // small changes best minimized by minimize()
+    tablesave()
+    saveas(m, "state3")
+    snapshot(m)
+}
+saveas(m, "groundstate3")    // relaxed state
+snapshot(m)
+
+//Pol = 0.4
+//xi = 0.2
+//j = vector(-1e12,0,0) // A/m2
+
+autosave(m,4e-12)
+tableAutosave(1e-11)
+tableAdd(ext_bubblepos)
+
+//run(10e-9)
